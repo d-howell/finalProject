@@ -34,6 +34,7 @@ public:
         mWord(givenWord),
         mCode(givenCode)
         {}
+    ~Word() {}
     string GetWord() const {return mWord;}
     int GetCode() const {return mCode;}
     void SetWord(string givenWord) {mWord = givenWord;}
@@ -62,6 +63,7 @@ public:
             mExits.reserve(DIRS);
             SetExitVec(north, east, south, west);
         }
+    ~Room() {}
     string GetDesc() {return mDescription;}
     vector<int> GetExitVec() {return mExits;}
     int GetExit(int dir) {return mExits[dir];}
@@ -100,12 +102,14 @@ public:
             SetWord(givenWord);
             SetCode(givenCode);
         }
-        string GetDesc() const {return mDescription;}
-        int GetLoc() const {return mLocation;}
-        bool GetCarry() const {return mCanCarry;}
-        void SetDesc(string desc) {mDescription = desc;}
-        void SetLoc(int loc) {mLocation = loc;}
-        void SetCarry(bool carry) {mCanCarry = carry;}
+    ~Noun() {}
+    string GetDesc() const {return mDescription;}
+    int GetLoc() const {return mLocation;}
+    bool GetCarry() const {return mCanCarry;}
+    void SetDesc(string desc) {mDescription = desc;}
+    void SetLoc(int loc) {mLocation = loc;}
+    void SetCarry(bool carry) {mCanCarry = carry;}
+
 private:
     string mDescription;
     int mLocation;
