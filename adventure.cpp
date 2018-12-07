@@ -24,7 +24,7 @@ const int VERBS = 8;
 
 const int NOUNS = 6;
 
-//change struct to class
+//change struct word to class
 //FINISHED
 class Word
 {
@@ -42,13 +42,55 @@ private:
     string mWord;
     int mCode;
 };
-
-struct room
+//change struct room to class
+//FINISHED
+class Room
 {
-    string description;
-    int exits_to_room[DIRS];
+public:
+    Room(vector<int> exits,string desc = "an empty room")://multiple constructors in case they want to be constructed different ways
+        mDescription(desc),
+        mExits(exits)
+        {}
+    Room(string desc = "an empty room"):
+        mDescription(desc)
+        {
+            mExits.reserve(DIRS);
+        }
+    Room(string desc = "an empty room", int north = NONE, int east = NONE, int south = NONE, int west = NONE): //will most likely use this one
+        mDescription(desc)
+        {
+            mExits.reserve(DIRS);
+            SetExitVec(north, east, south, west);
+        }
+    string GetDesc() {return mDescription;}
+    vector<int> GetExitVec() {return mExits;}
+    int GetExit(int dir) {return mExits[dir];}
+    void SetDesc(string desc) {mDescription = desc;}
+    void SetExit(int dir, int loc)
+    {
+        mExits.at(dir) = loc;
+    }
+    void SetExitVec(vector<int> exits)
+    {
+        mExits = exits;
+    }
+    void SetExitVec(int north, int east, int south, int west)
+    {
+        
+        vector<int>::iterator iter = mExits.begin();
+        mExits.clear();        
+        mExits.insert(iter+NORTH,north);
+        mExits.insert(iter+EAST,east);
+        mExits.insert(iter+SOUTH,south);
+        mExits.insert(iter+WEST,west);
+    }
+private:
+    string mDescription;
+    vector<int> mExits;
 };
 
+//change struct noun to class
+//FINISH
 class Noun : public Word //set noun as a derived class to save myself some work
 {
 public:
@@ -70,75 +112,23 @@ private:
     bool mCanCarry;
 
 };
-
-void set_rooms(room *rms)
+//Change to match new class type Room
+//FINISHED
+void set_rooms(vector<Room> &rms)
 {
-    rms[SPORTSHOP].description.assign("sports shop");
-    rms[SPORTSHOP].exits_to_room[NORTH] = NONE;
-    rms[SPORTSHOP].exits_to_room[EAST] = NONE;
-    rms[SPORTSHOP].exits_to_room[SOUTH] = CARPARK;
-    rms[SPORTSHOP].exits_to_room[NORTH] = NONE;
+    vector<Room>::iterator iter = rms.begin();
     
-    rms[CASINO].description.assign("bustling casino");
-    rms[CASINO].exits_to_room[NORTH] = NONE;
-    rms[CASINO].exits_to_room[EAST] = NONE;
-    rms[CASINO].exits_to_room[SOUTH] = LOBBY;
-    rms[CASINO].exits_to_room[WEST] = NONE;
-
-    rms[CARPARK].description.assign("car park");
-    rms[CARPARK].exits_to_room[NORTH] = SPORTSHOP;
-    rms[CARPARK].exits_to_room[EAST] = LOBBY;
-    rms[CARPARK].exits_to_room[SOUTH] = NONE;
-    rms[CARPARK].exits_to_room[WEST] = NONE;
-
-    rms[LOBBY].description.assign("hotel lobby");
-    rms[LOBBY].exits_to_room[NORTH] = NONE;
-    rms[LOBBY].exits_to_room[EAST] = NONE;
-    rms[LOBBY].exits_to_room[SOUTH] = CARPARK;
-    rms[LOBBY].exits_to_room[WEST] = NONE;
-
-    rms[RESTAURANT].description.assign("restaurant");
-    rms[RESTAURANT].exits_to_room[NORTH] = NONE;
-    rms[RESTAURANT].exits_to_room[EAST] = NONE;
-    rms[RESTAURANT].exits_to_room[SOUTH] = CARPARK;
-    rms[RESTAURANT].exits_to_room[WEST] = NONE;
-
-    rms[CORRIDOR].description.assign("corridor");
-    rms[CORRIDOR].exits_to_room[NORTH] = NONE;
-    rms[CORRIDOR].exits_to_room[EAST] = NONE;
-    rms[CORRIDOR].exits_to_room[SOUTH] = CARPARK;
-    rms[CORRIDOR].exits_to_room[WEST] = NONE;
-
-    rms[STOREROOM].description.assign("store room");
-    rms[STOREROOM].exits_to_room[NORTH] = NONE;
-    rms[STOREROOM].exits_to_room[EAST] = NONE;
-    rms[STOREROOM].exits_to_room[SOUTH] = CARPARK;
-    rms[STOREROOM].exits_to_room[WEST] = NONE;
-
-    rms[POOL].description.assign("swimming pool area");
-    rms[POOL].exits_to_room[NORTH] = NONE;
-    rms[POOL].exits_to_room[EAST] = NONE;
-    rms[POOL].exits_to_room[SOUTH] = CARPARK;
-    rms[POOL].exits_to_room[WEST] = NONE;
-
-    rms[GARDEN].description.assign("tranquil garden");
-    rms[GARDEN].exits_to_room[NORTH] = NONE;
-    rms[GARDEN].exits_to_room[EAST] = NONE;
-    rms[GARDEN].exits_to_room[SOUTH] = CARPARK;
-    rms[GARDEN].exits_to_room[WEST] = NONE;
-
-    rms[POND].description.assign("patio with a fish pond");
-    rms[POND].exits_to_room[NORTH] = NONE;
-    rms[POND].exits_to_room[EAST] = NONE;
-    rms[POND].exits_to_room[SOUTH] = CARPARK;
-    rms[POND].exits_to_room[WEST] = NONE;
-
-    rms[PUMPROOM].description.assign("damp pump room");
-    rms[PUMPROOM].exits_to_room[NORTH] = NONE;
-    rms[PUMPROOM].exits_to_room[EAST] = NONE;
-    rms[PUMPROOM].exits_to_room[SOUTH] = CARPARK;
-    rms[PUMPROOM].exits_to_room[WEST] = NONE;
-
+    rms.insert(iter+SPORTSHOP,Room("sports shop",NONE,NONE,CARPARK,NONE));
+    rms.insert(iter+CASINO,Room("bustling casino",NONE,NONE,LOBBY,NONE));
+    rms.insert(iter+CARPARK,Room("car park",SPORTSHOP,LOBBY,NONE,NONE));
+    rms.insert(iter+LOBBY,Room("hotel lobby",CASINO,RESTAURANT,CORRIDOR,CARPARK));
+    rms.insert(iter+RESTAURANT,Room("restaurant",NONE,NONE,NONE,LOBBY));
+    rms.insert(iter+CORRIDOR,Room("corridor",LOBBY,NONE,GARDEN,NONE));
+    rms.insert(iter+STOREROOM,Room("store room",NONE,NONE,NONE,NONE));
+    rms.insert(iter+POOL,Room("swimming pool area",NONE,GARDEN,PUMPROOM,NONE));
+    rms.insert(iter+GARDEN,Room("tranquil garden",CORRIDOR,POND,NONE,POOL));
+    rms.insert(iter+POND,Room("patio with a fish pond",NONE,NONE,NONE,GARDEN));
+    rms.insert(iter+PUMPROOM,Room("damp pump room",POOL,NONE,NONE,NONE));
 }
 
 //Change to match new class type Word
@@ -186,7 +176,6 @@ void section_command(string Cmd, string &wd1, string &wd2){
     vector<string> words;
     char search = ' ';
     size_t i, j;
-    cout<<"1";
     for(i=0; i < Cmd.size(); i++)
     {
         if(Cmd.at(i) != search)
@@ -204,7 +193,6 @@ void section_command(string Cmd, string &wd1, string &wd2){
             sub_str.clear();
         }
     }
-    cout<<"2";
     for(i = words.size() - 1; i > 0; i--)
     {
         if(words.at(i) == "")
@@ -212,7 +200,6 @@ void section_command(string Cmd, string &wd1, string &wd2){
             words.erase(words.begin() + i);
         }
     }
-    cout<<"3";
     for(i = 0; i < words.size(); i++)
     {
         for(j = 0; j < words.at(i).size(); j++)
@@ -223,7 +210,6 @@ void section_command(string Cmd, string &wd1, string &wd2){
             }
         }
     }
-    cout<<"4";
     if(words.size() == 0)
     {
         cout << "No command given" << endl;
@@ -243,18 +229,18 @@ void section_command(string Cmd, string &wd1, string &wd2){
     }
 }
 
-void look_around(int loc, room *rms, vector<Word> &dir, vector<Noun> &nns)
+void look_around(int loc, vector<Room> &rms, vector<Word> &dir, vector<Noun> &nns)
 {
     int i;
-    cout << "I am in a " << rms[loc].description << "." << endl;
+    cout << "I am in a " << rms[loc].GetDesc() << "." << endl;
 
     vector<Word>::iterator iter = dir.begin();
     for(i = 0; i < DIRS; i++)
     {
-        if(rms[loc].exits_to_room[i] != NONE)
+        if(rms[loc].GetExit(i) != NONE)
         {
             cout << "There is an exit " << dir[i].GetWord() << " to a " << 
-                rms[rms[loc].exits_to_room[i]].description << "." << endl;
+                rms[rms[loc].GetExit(i)].GetDesc() << "." << endl;
         }
     }
 
@@ -267,7 +253,7 @@ void look_around(int loc, room *rms, vector<Word> &dir, vector<Noun> &nns)
     }
 }
 
-bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &vbs, room *rms, vector<Noun> &nns)
+bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &vbs, vector<Room> rms, vector<Noun> &nns)
 {
     static bool door_state = false;
 
@@ -276,10 +262,10 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
     {
         if(wd1 == dir[i].GetWord())
         {
-            if(rms[loc].exits_to_room[dir[i].GetCode()] != NONE)
+            if(rms[loc].GetExit(dir[i].GetCode()) != NONE)
             {
-                loc = rms[loc].exits_to_room[dir[i].GetCode()];
-                cout << "I am now in a " << rms[loc].description << "." << endl;
+                loc = rms[loc].GetExit(dir[i].GetCode());
+                cout << "I am now in a " << rms[loc].GetDesc() << "." << endl;
 
                 if(loc == STOREROOM || loc == CORRIDOR)
                 {
@@ -341,8 +327,8 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
                 if(door_state == false)
                 {
                     door_state = true;
-                    rms[CORRIDOR].exits_to_room[EAST] = STOREROOM;
-                    rms[STOREROOM].exits_to_room[WEST] = CORRIDOR;
+                    rms[CORRIDOR].SetExit(EAST,STOREROOM);
+                    rms[STOREROOM].SetExit(WEST,CORRIDOR);
                     nns[STORE_DOOR].SetDesc("an open store room door");
                     cout << "I have opened the door." << endl;
                     return true;
@@ -376,7 +362,8 @@ int main()
     string word_1;
     string word_2;
 
-    room rooms[ROOMS];
+    vector<Room> rooms;
+    rooms.reserve(ROOMS);
     set_rooms(rooms);
     
     
@@ -402,9 +389,9 @@ int main()
 
         word_1.clear();
         word_2.clear();
-        cout<< "test";
+
         section_command(command, word_1, word_2);
-        cout<<"test";
+
         if(word_1 != "QUIT")
         {
             parser(location, word_1, word_2, directions, verbs, rooms, nouns);
