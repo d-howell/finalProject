@@ -2,6 +2,32 @@
 //IN200 Final Project
 //Adventure
 
+/* x = finished
+Total ~400 Pts/850 Pts
+1. 25 Pts - [x] - Change "struct words" to class
+2. 50 Pts - [x] - Change “struct room” to a class
+3. 25 Pts - [x] - Change “struct noun” to a class
+4. 25 Pts - [x] - Create constructors and destructors for each class.
+5. 25 Pts - [] - Create overloaded constructor functions
+6. 25 Pts - [x] - Class public/private members
+7. 50 Pts - [x] - Use “setters/getters” for private data members
+8. 25 Pts - [] - Use a static data member to limit number of objects
+9. 50 Pts - [x] - Use constructors to create the objects
+10. 25 Pts - [x] - Change rooms array into vectors
+11. 25 Pts - [x] - Change directions array into vectors
+12. 25 Pts - [x] - Change verbs array into vectors
+13. 25 Pts - [x] - Change nouns array into vectors
+14. 50 Pts - [] - Re-theme the game
+15. 50 Pts - [] - Expand the number of nouns
+16. 25 Pts - [] - Expand the number of rooms
+17. 25 Pts - [] - Add additional verbs
+18. 50 Pts - [x] - Use inheritance with your classes/objects
+19. 150 Pts - [] - Enable other action verbs
+REQUIRED
+
+20. 50 Pts - [X] - Code Indentation
+21. 50 Pts - [x] - Map
+*/
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,7 +40,7 @@ enum en_ROOMS {SPORTSHOP, CASINO, CARPARK, LOBBY, RESTAURANT, CORRIDOR, STOREROO
     POOL, GARDEN, POND, PUMPROOM};
 enum en_VERBS {GET, DROP, USE, OPEN, CLOSE, EXAMINE, INVENTORY, LOOK};
 
-enum en_NOUNS {STORE_DOOR, MAGNET, METER, ROULETTE, MONEY, FISHROD};
+enum en_NOUNS {DOOR, MAGNET, METER, ROULETTE, MONEY, FISHROD};
 
 
 const int NONE = -1;
@@ -167,7 +193,7 @@ void set_nouns(vector<Noun> &nns)
 {
     vector<Noun>::iterator iter = nns.begin();
     //use iter along with insert to match position to enum value
-    nns.insert(iter+STORE_DOOR,Noun("DOOR",STORE_DOOR,"a closed store room door", CORRIDOR, false));
+    nns.insert(iter+DOOR,Noun("DOOR",DOOR,"a closed store room door", CORRIDOR, false));
     nns.insert(iter+MAGNET,Noun("MAGNET",MAGNET,"a magnet",NONE,true));
     nns.insert(iter+METER,Noun("METER",METER,"a parking meter",CARPARK,false));
     nns.insert(iter+ROULETTE,Noun("ROULETTE",ROULETTE,"a roulette wheel",CASINO,false));
@@ -273,7 +299,7 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
 
                 if(loc == STOREROOM || loc == CORRIDOR)
                 {
-                    nns[STORE_DOOR].SetLoc(loc);
+                    nns[DOOR].SetLoc(loc);
                 }
 
                 return true;
@@ -324,7 +350,7 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
 
     if(VERB_ACTION == OPEN)
     {
-        if(NOUN_MATCH == STORE_DOOR)
+        if(NOUN_MATCH == DOOR)
         {
             if(loc == CORRIDOR || loc == STOREROOM)
             {
@@ -333,7 +359,7 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
                     door_state = true;
                     rms[CORRIDOR].SetExit(EAST,STOREROOM);
                     rms[STOREROOM].SetExit(WEST,CORRIDOR);
-                    nns[STORE_DOOR].SetDesc("an open store room door");
+                    nns[DOOR].SetDesc("an open store room door");
                     cout << "I have opened the door." << endl;
                     return true;
                 }
