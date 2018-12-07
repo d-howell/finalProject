@@ -29,7 +29,8 @@ const int NOUNS = 6;
 class Word
 {
 public:
-    Word(string givenWord, int givenCode):
+    //Had to give these default values, as Noun was giving errors, any way i can avoid that?
+    Word(string givenWord = "", int givenCode = 0):
         mWord(givenWord),
         mCode(givenCode)
         {}
@@ -48,13 +49,26 @@ struct room
     int exits_to_room[DIRS];
 };
 
-struct noun
+class Noun : public Word //set noun as a derived class to save myself some work
 {
-    string word;
-    string description;
-    int code;
-    int location;
-    bool can_carry;
+public:
+    Noun(string givenWord, int givenCode, string description, int location, bool canCarry):
+        mDescription(description), mLocation(location), mCanCarry(canCarry)
+        {
+            SetWord(givenWord);
+            SetCode(givenCode);
+        }
+        string GetDesc() const {return mDescription;}
+        int GetLoc() const {return mLocation;}
+        bool GetCarry() const {return mCanCarry;}
+        void SetDesc(string desc) {mDescription = desc;}
+        void SetLoc(int loc) {mLocation = loc;}
+        void SetCarry(bool carry) {mCanCarry = carry;}
+private:
+    string mDescription;
+    int mLocation;
+    bool mCanCarry;
+
 };
 
 void set_rooms(room *rms)
@@ -153,46 +167,20 @@ void set_verbs(vector<Word> &vbs)
     vbs.insert(iter+INVENTORY,Word("INVENTORY", INVENTORY));
     vbs.insert(iter+LOOK,Word("LOOK", LOOK));
 }
-
-void set_nouns(noun *nns)
+//Change to match class noun
+//FINISHED
+void set_nouns(vector<Noun> &nns)
 {
-    nns[STORE_DOOR].word = "DOOR";
-    nns[STORE_DOOR].code = STORE_DOOR;
-    nns[STORE_DOOR].description = "a closed store room door";
-    nns[STORE_DOOR].can_carry = false;
-    nns[STORE_DOOR].location = CORRIDOR;
-
-    nns[MAGNET].word = "MAGNET";
-    nns[MAGNET].code = MAGNET;
-    nns[MAGNET].description = "a magnet";
-    nns[MAGNET].can_carry = true;
-    nns[MAGNET].location = NONE;
-
-    nns[METER].word = "METER";
-    nns[METER].code = METER;
-    nns[METER].description = "a parking meter";
-    nns[METER].can_carry = false;
-    nns[METER].location = CARPARK;
-
-    nns[ROULETTE].word = "ROULETTE";
-    nns[ROULETTE].code = ROULETTE;
-    nns[ROULETTE].description = "a roulette wheel";
-    nns[ROULETTE].can_carry = false;
-    nns[ROULETTE].location = CASINO;
-
-    nns[MONEY].word = "MONEY";
-    nns[MONEY].code = MONEY;
-    nns[MONEY].description = "some money";
-    nns[MONEY].can_carry = true;
-    nns[MONEY].location = NONE;
-
-    nns[FISHROD].word = "ROD";
-    nns[FISHROD].code = FISHROD;
-    nns[FISHROD].description = "a fishing rod";
-    nns[FISHROD].can_carry = false;
-    nns[FISHROD].location = SPORTSHOP;
+    vector<Noun>::iterator iter = nns.begin();
+    //use iter along with insert to match position to enum value
+    nns.insert(iter+STORE_DOOR,Noun("DOOR",STORE_DOOR,"a closed store room door", CORRIDOR, false));
+    nns.insert(iter+MAGNET,Noun("MAGNET",MAGNET,"a magnet",NONE,true));
+    nns.insert(iter+METER,Noun("METER",METER,"a parking meter",CARPARK,false));
+    nns.insert(iter+ROULETTE,Noun("ROULETTE",ROULETTE,"a roulette wheel",CASINO,false));
+    nns.insert(iter+MONEY,Noun("MONEY",MONEY,"some money",NONE,true));
+    nns.insert(iter+FISHROD,Noun("ROD",FISHROD,"a fishing rod",SPORTSHOP,false));
 }
-//Adjust to match 
+ 
 void section_command(string Cmd, string &wd1, string &wd2){
     string sub_str;
     vector<string> words;
@@ -255,7 +243,7 @@ void section_command(string Cmd, string &wd1, string &wd2){
     }
 }
 
-void look_around(int loc, room *rms, vector<Word> &dir, noun *nns)
+void look_around(int loc, room *rms, vector<Word> &dir, vector<Noun> &nns)
 {
     int i;
     cout << "I am in a " << rms[loc].description << "." << endl;
@@ -272,14 +260,14 @@ void look_around(int loc, room *rms, vector<Word> &dir, noun *nns)
 
     for(i = 0; i < NOUNS; i++)
     {
-        if(nns[i].location == loc)
+        if(nns[i].GetLoc() == loc)
         {
-            cout << "I see " << nns[i].description << "." << endl;
+            cout << "I see " << nns[i].GetDesc() << "." << endl;
         }
     }
 }
 
-bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &vbs, room *rms, noun *nns)
+bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &vbs, room *rms, vector<Noun> &nns)
 {
     static bool door_state = false;
 
@@ -295,7 +283,7 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
 
                 if(loc == STOREROOM || loc == CORRIDOR)
                 {
-                    nns[STORE_DOOR].location = loc;
+                    nns[STORE_DOOR].SetLoc(loc);
                 }
 
                 return true;
@@ -324,9 +312,9 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
     {
         for(i = 0; i < NOUNS; i++)
         {
-            if(wd2 == nns[i].word)
+            if(wd2 == nns[i].GetWord())
             {
-                NOUN_MATCH = nns[i].code;
+                NOUN_MATCH = nns[i].GetCode();
                 break;
             }
         }
@@ -355,8 +343,7 @@ bool parser(int &loc, string wd1, string wd2, vector<Word> &dir, vector<Word> &v
                     door_state = true;
                     rms[CORRIDOR].exits_to_room[EAST] = STOREROOM;
                     rms[STOREROOM].exits_to_room[WEST] = CORRIDOR;
-                    nns[STORE_DOOR].description.clear();
-                    nns[STORE_DOOR].description.assign("an open store room door");
+                    nns[STORE_DOOR].SetDesc("an open store room door");
                     cout << "I have opened the door." << endl;
                     return true;
                 }
@@ -401,7 +388,8 @@ int main()
     verbs.reserve(VERBS);
     set_verbs(verbs);
 
-    noun nouns[NOUNS];
+    vector<Noun> nouns;
+    nouns.reserve(NOUNS);
     set_nouns(nouns);
 
     int location = CARPARK;
